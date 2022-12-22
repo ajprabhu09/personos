@@ -1,8 +1,10 @@
-.set ALIGN, 1 << 0 // Align to page boundary
-.set MEMINFO, 1 << 1 // Provide memory map
-.set FLAGS, ALIGN | MEMINFO // Multiboot flag field
-.set MAGIC, 0x1BADB002 // lets bootloader finds header
-.set CHECKSUM, -(FLAGS + MAGIC)  // Checksum for multiboot
+/* Declare constants for the multiboot header. */
+.set ALIGN,    1<<0             /* align loaded modules on page boundaries */
+.set MEMINFO,  1<<1             /* provide memory map */
+.set FLAGS,    ALIGN | MEMINFO  /* this is the Multiboot 'flag' field */
+.set MAGIC,    0x1BADB002       /* 'magic number' lets bootloader find the header */
+.set CHECKSUM, -(MAGIC + FLAGS) /* checksum of above, to prove we are multiboot */
+ 
 /* 
 Declare a multiboot header that marks the program as a kernel. These are magic
 values that are documented in the multiboot standard. The bootloader will
@@ -15,9 +17,8 @@ forced to be within the first 8 KiB of the kernel file.
 .long MAGIC
 .long FLAGS
 .long CHECKSUM
-  
-
-  /*
+ 
+/*
 The multiboot standard does not define the value of the stack pointer register
 (esp) and it is up to the kernel to provide a stack. This allocates room for a
 small stack by creating a symbol at the bottom of it, then allocating 16384
@@ -34,7 +35,7 @@ undefined behavior.
 stack_bottom:
 .skip 16384 # 16 KiB
 stack_top:
-
+ 
 /*
 The linker script specifies _start as the entry point to the kernel and the
 bootloader will jump to this position once the kernel has been loaded. It
