@@ -51,5 +51,11 @@ iso:
 	rm -rf personos/
 
 
-run:
-	qemu-system-i386 -nographic -cdrom personos.iso
+run_iso:
+	qemu-system-i386 -display curses  personos.iso
+
+killemu:
+	killall qemu-system-i386
+
+format: 
+	find ./ -iname *.h -o -iname *.c | xargs clang-format -i
