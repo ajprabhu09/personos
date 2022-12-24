@@ -2,7 +2,7 @@ INC_DIR = inc
 
 SRC_DIR = src
 ASM_DIR = asm
-
+INC_DIR = inc/
 
 BUILD_SRC_DIR = build/c
 BUILD_ASM_DIR = build/asm
@@ -13,13 +13,11 @@ CC=i686-elf-gcc
 AS=i686-elf-as
 
 
-CFLAGS = -std=gnu99 -ffreestanding -O2 -Wall -Wextra  -mno-red-zone
-
+CFLAGS = -std=gnu99 -ffreestanding -O2 -Wall -Wextra  -mno-red-zone -I$(INC_DIR)
 
 # Modify this to add object files
 
-
-OBJS = $(BUILD_SRC_DIR)/kernel.o $(BUILD_ASM_DIR)/boot.o
+OBJS = $(BUILD_SRC_DIR)/kernel.o $(BUILD_ASM_DIR)/boot.o $(BUILD_SRC_DIR)/kvga.o
 
 
 all: $(OBJS) build/boot.bin
@@ -50,9 +48,12 @@ iso:
 	grub-mkrescue -o personos.iso personos/
 	rm -rf personos/
 
-
+# --------------------TESTING HELPERS-----------------------------
 run_iso:
 	qemu-system-i386 -display curses  personos.iso
+
+run:
+	qemu-system-i386 -display curses  -kernel build/boot.bin
 
 killemu:
 	killall qemu-system-i386
