@@ -1,7 +1,11 @@
+
+ARCH = i386
 INC_DIR = inc
 
 SRC_DIR = src
-ASM_DIR = asm
+
+ASM_DIR = arch/${ARCH}
+
 INC_DIR = inc/
 
 BUILD_SRC_DIR = build/c
@@ -39,7 +43,7 @@ setup:
 	mkdir -p $(BUILD_ASM_DIR) $(BUILD_SRC_DIR)
 
 build/boot.bin: $(OBJS)
-	$(CC) -T linker.lds -o build/boot.bin -ffreestanding -O2 -nostdlib $(OBJS) -lgcc
+	$(CC) -T $(ASM_DIR)/linker.lds -o build/boot.bin -ffreestanding -O2 -nostdlib $(OBJS) -lgcc
 
 iso:
 	mkdir -p personos/boot/grub
