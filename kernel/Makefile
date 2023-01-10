@@ -4,9 +4,8 @@ INC_DIR = inc
 
 SRC_DIR = src
 
-ASM_DIR = arch/${ARCH}
+ARCH_DIR = arch/${ARCH}
 
-INC_DIR = inc/
 
 BUILD_SRC_DIR = build/c
 BUILD_ASM_DIR = build/asm
@@ -21,7 +20,7 @@ CFLAGS = -std=gnu99 -ffreestanding -O2 -Wall -Wextra  -mno-red-zone -I$(INC_DIR)
 
 # Modify this to add object files
 
-OBJS = $(BUILD_SRC_DIR)/kernel.o $(BUILD_ASM_DIR)/boot.o $(BUILD_SRC_DIR)/kvga.o
+OBJS = $(BUILD_SRC_DIR)/kernel.o $(BUILD_ASM_DIR)/boot.o $(BUILD_SRC_DIR)/kvga.o $(BUILD_ASM_DIR)/crti.o $(BUILD_ASM_DIR)/crtn.o
 
 
 all: $(OBJS) build/boot.bin
@@ -31,19 +30,21 @@ cb: clean $(OBJS) build/boot.bin
 $(BUILD_SRC_DIR)/%.o: $(SRC_DIR)/%.c
 	$(CC)  -c $< -o $@ $(CFLAGS)
 
+$(BUILD_SRC_DIR)/%.o: $(ARCH_DIR)/src/%.c
+	$(CC)  -c $< -o $@ $(CFLAGS)
 
-$(BUILD_ASM_DIR)/%.o: $(ASM_DIR)/%.S
+$(BUILD_ASM_DIR)/%.o: $(ARCH_DIR)/%.S
 	$(AS) $< -o $@ 
 
 
 clean:
-	rm -f $(OBJS) *.iso
+	rm -rf $(OBJS) *.iso build/*.bin build/personos/
 
 setup:
 	mkdir -p $(BUILD_ASM_DIR) $(BUILD_SRC_DIR)
 
 build/boot.bin: $(OBJS)
-	$(CC) -T $(ASM_DIR)/linker.lds -o build/boot.bin -ffreestanding -O2 -nostdlib $(OBJS) -lgcc
+	$(CC) -T $(ARCH_DIR)/linker.lds -o build/boot.bin -ffreestanding -O2 -nostdlib $(OBJS) -lgcc
 
 iso:
 	mkdir -p personos/boot/grub
@@ -57,7 +58,7 @@ run_iso:
 	qemu-system-i386 -display curses  personos.iso
 
 run:
-	qemu-system-i386 -display curses  -kernel build/boot.bin
+	qemu-system-i386 -display curses -s -S -kernel build/boot.bin
 
 killemu:
 	killall qemu-system-i386

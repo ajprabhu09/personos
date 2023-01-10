@@ -2,8 +2,12 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
-
+#include "kvga.h"
 /* Hardware text mode color constants. */
+
+
+#define VGA_ADDR 0xB8000
+
 enum vga_color {
   VGA_COLOR_BLACK = 0,
   VGA_COLOR_BLUE = 1,
